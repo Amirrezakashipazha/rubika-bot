@@ -16,6 +16,8 @@ async function apiRequest(method: string, body: unknown) {
 export async function POST(req: NextRequest) {
     const update = await req.json();
     const message = update.message;
+    const callbackQuery = update.callback_query
+
 
     if (!message) return NextResponse.json({ ok: true });
 
@@ -32,6 +34,51 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ ok: true });
     }
 
+    if (callbackQuery === "menu") {
+        try {
+            const gameList = await fetchMenu(); // your static game list
+
+            if (!gameList || !gameList.length) {
+                await apiRequest("sendMessage", {
+                    chat_id: chatId,
+                    text: "بازی در حال حاضر موجود نیست 😢",
+                });
+                return NextResponse.json({ ok: true });
+            }
+
+            // Build keyboard dynamically (2 games per row)
+            const keyboard: { text: string }[][] = [];
+            for (let i = 0; i < gameList.length; i += 2) {
+                const row = [
+                    { text: gameList[i].title },
+                    gameList[i + 1] ? { text: gameList[i + 1].title } : undefined,
+                ].filter(Boolean) as { text: string }[];
+                keyboard.push(row);
+            }
+
+            await apiRequest("sendMessage", {
+                chat_id: chatId,
+                text: "لیست بازی ها 🚀",
+
+                reply_markup: {
+                    keyboard,
+                    one_time_keyboard: true,
+                    resize_keyboard: true,
+                },
+            });
+        } catch (err) {
+            console.error(err);
+            await apiRequest("sendMessage", {
+                chat_id: chatId,
+                text: "Error fetching games 😢",
+            });
+        }
+    } else if (callbackQuery === "help") {
+        await apiRequest("sendMessage", {
+            chat_id: chatId,
+            text: "راهنما",
+        });
+    }
     // 2️⃣ /start command
     if (text === "/start") {
         await apiRequest("sendMessage", {
@@ -42,16 +89,13 @@ export async function POST(req: NextRequest) {
                     [
                         {
                             text: "راهنما",
-                            callback_data: "/help"
+                            callback_data: "help"
                         },
                         {
                             text: "لیست بازی ها",
-                            callback_data: "/menu"
+                            callback_data: "menu"
                         }
-                    ],
-                    [
-
-                    ],
+                    ]
                 ],
             },
         });
@@ -64,7 +108,7 @@ export async function POST(req: NextRequest) {
             text: "راهنما",
         });
     }
- 
+
     // 3️⃣ /phone command
     else if (text === "/phone") {
         await apiRequest("sendMessage", {
