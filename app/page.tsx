@@ -8,7 +8,8 @@ export default async function Home() {
   setWebhook()
 
   const menu = await fetchMenu();
-  const homeWidjet = menu.data?.filter(it => it.group === 'page__game__main')?.[0]?.widgets.find(w => w.blueprint_unique_name === "wb__square__game__vertical")
+  const homeWidjet = menu?.data?.filter(it => it.group === 'page__game__main')?.[0]?.widgets.find(w => w.blueprint_unique_name === "wb__square__game__vertical")
+  console.log(`${homeWidjet?.schema_data.source_url}`)
   const api = await fetch(`${homeWidjet?.schema_data.source_url}`, {
     method: 'GET',
     headers: apiHeader,

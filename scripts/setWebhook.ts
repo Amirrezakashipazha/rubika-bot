@@ -1,6 +1,5 @@
 export const setWebhook = async () => {
   const TOKEN = process.env.BALE_BOT_TOKEN!;
-  console.log("TOKEN : ",TOKEN);
 
   const res = await fetch(`https://tapi.bale.ai/bot${TOKEN}/setWebhook`, {
     method: 'POST',

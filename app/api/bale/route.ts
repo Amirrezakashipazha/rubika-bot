@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
     else if (text === "/menu") {
         try {
             const menu = await fetchMenu();
-            const homeWidget = menu.data
+            const homeWidget = menu?.data
                 ?.filter(it => it.group === "page__game__main")?.[0]
                 ?.widgets.find(w => w.blueprint_unique_name === "wb__square__game__vertical");
 

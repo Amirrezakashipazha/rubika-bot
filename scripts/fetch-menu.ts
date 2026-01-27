@@ -16,6 +16,7 @@ export const fetchMenu = async () => {
     const timeout = setTimeout(() => controller.abort(), 15000); // 15 seconds
 
     try {
+        console.log(`${process.env.NEXT_PUBLIC_API_ENDPOINT}${MENU_BUILDER_URL}`)
         const res = await fetch(
             `${process.env.NEXT_PUBLIC_API_ENDPOINT}${MENU_BUILDER_URL}`,
             {
@@ -28,13 +29,13 @@ export const fetchMenu = async () => {
         const menu: MenuBuilderMainModel = await res.json();
         return menu;
     } catch (err) {
-        if ((err as unknown).name === "AbortError") {
+        if (err instanceof Error && err.name === "AbortError") {
             console.error("Fetch timed out");
         } else {
             console.error(err);
         }
-        throw err;
-    } finally {
+    }
+    finally {
         clearTimeout(timeout);
     }
 
