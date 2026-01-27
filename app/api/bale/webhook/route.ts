@@ -16,7 +16,7 @@ export async function GET() {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                "url": "https://bot.tlx.ir/api/bale"
+                "url": "https://bale-bot-wheat.vercel.app/api/bale"
             })
         });
 
