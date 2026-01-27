@@ -13,77 +13,20 @@ async function apiRequest(method: string, body: unknown) {
     return res.json();
 }
 
-async function sendGameList(chatId: number) {
-    const gameList = await fetchMenu();
-
-    if (!gameList || !gameList.length) {
-        await apiRequest("sendMessage", {
-            chat_id: chatId,
-            text: "بازی در حال حاضر موجود نیست 😢",
-        });
-        return;
-    }
-
-    // Build inline keyboard dynamically (2 games per row)
-    const keyboard: { text: string; callback_data: string }[][] = [];
-    for (let i = 0; i < gameList.length; i += 2) {
-        const row = [
-            { text: gameList[i].title, callback_data: `GAME_SELECTED_${gameList[i].title}` },
-            gameList[i + 1] ? { text: gameList[i + 1].title, callback_data: `GAME_SELECTED_${gameList[i + 1].title}` } : undefined,
-        ].filter(Boolean) as { text: string; callback_data: string }[];
-        keyboard.push(row);
-    }
-
-    await apiRequest("sendMessage", {
-        chat_id: chatId,
-        text: "لیست بازی ها 🚀",
-        reply_markup: { inline_keyboard: keyboard },
-    });
-}
-
 export async function POST(req: NextRequest) {
     const update = await req.json();
     const message = update.message;
-
-    // 1️⃣ Handle callback queries (inline keyboard)
-    if (update.callback_query) {
-        const data = update.callback_query.data;
-        const chatId = update.callback_query.message.chat.id;
-
-        if (data.includes("GAME_SELECTED_")) {
-            const gameTitle = data.replace("GAME_SELECTED_", "");
-            const gameList = await fetchMenu();
-            const selectedGame = gameList.find(g => g.title === gameTitle);
-
-            if (selectedGame) {
-                await apiRequest("sendMessage", {
-                    chat_id: chatId,
-                    text: "شروع بازی 🎮",
-                    reply_markup: {
-                        inline_keyboard: [
-                            [
-                                {
-                                    text: "بازی کن ▶️",
-                                    web_app: {
-                                        url: `https://stage.gamebox.ir/t/game/${selectedGame.id}?shTitle=${encodeURIComponent(selectedGame.title)}`,
-                                    },
-                                },
-                            ],
-                        ],
-                    },
-                });
-            }
-        }
-
-        return NextResponse.json({ ok: true });
-    }
 
     if (!message) return NextResponse.json({ ok: true });
 
     const chatId = message.chat.id;
     const text = message.text || "";
 
-    // 2️⃣ Handle contact sharing
+    console.log('text is : ', text)
+
+
+
+    // 1️⃣ Handle contact sharing
     if (message.contact) {
         const phoneNumber = message.contact.phone_number;
         await apiRequest("sendMessage", {
@@ -93,78 +36,140 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ ok: true });
     }
 
-    // 3️⃣ Handle text messages and commands
-    switch (text) {
-        case "/start":
-            await apiRequest("sendMessage", {
-                chatId,
-                text: "شروع ربات 🚀",
-                reply_markup: {
-                    keyboard: [
-                        ["🎮 بازی کن", "📜 لیست بازی‌ها"],
-                        ["📞 احراز هویت", "ℹ️ راهنما"],
+    // 2️⃣ /start command
+    if (text === "/start") {
+        await apiRequest("sendMessage", {
+            chat_id: chatId,
+            text: "شروع ربات 🚀",
+            reply_markup: {
+                inline_keyboard: [
+                    [
+                        {
+                            text: "راهنما",
+                            callback_data: "/help"
+                        },
+                        {
+                            text: "لیست بازی ها",
+                            callback_data: "/menu"
+                        }
                     ],
-                    resize_keyboard: true,
-                },
-            });
-            break;
+                    [
 
-        case "/phone":
-        case "📞 احراز هویت":
+                    ],
+                ],
+            },
+        });
+    }
+
+    // 2️⃣ /start command
+    if (text === "/help") {
+        await apiRequest("sendMessage", {
+            chat_id: chatId,
+            text: "راهنما",
+        });
+    }
+
+    // 3️⃣ /phone command
+    else if (text === "/phone") {
+        await apiRequest("sendMessage", {
+            chat_id: chatId,
+            text: "لطفا شماره موبایل خود را بفرستید:",
+            reply_markup: {
+                keyboard: [[{ text: "ارسال شماره موبایل", request_contact: true }]],
+                one_time_keyboard: true,
+                resize_keyboard: true,
+            },
+        });
+    } else if (text === "/game") {
+        await apiRequest("sendMessage", {
+            chat_id: chatId,
+            text: "شروع ربات 🚀",
+        });
+    }
+    // 4️⃣ /menu command
+    else if (text === "/menu") {
+        try {
+            const gameList = await fetchMenu(); // your static game list
+
+            if (!gameList || !gameList.length) {
+                await apiRequest("sendMessage", {
+                    chat_id: chatId,
+                    text: "بازی در حال حاضر موجود نیست 😢",
+                });
+                return NextResponse.json({ ok: true });
+            }
+
+            // Build keyboard dynamically (2 games per row)
+            const keyboard: { text: string }[][] = [];
+            for (let i = 0; i < gameList.length; i += 2) {
+                const row = [
+                    { text: gameList[i].title },
+                    gameList[i + 1] ? { text: gameList[i + 1].title } : undefined,
+                ].filter(Boolean) as { text: string }[];
+                keyboard.push(row);
+            }
+
             await apiRequest("sendMessage", {
-                chatId,
-                text: "لطفا شماره موبایل خود را بفرستید:",
+                chat_id: chatId,
+                text: "لیست بازی ها 🚀",
+
                 reply_markup: {
-                    keyboard: [[{ text: "ارسال شماره موبایل", request_contact: true }]],
+                    keyboard,
                     one_time_keyboard: true,
                     resize_keyboard: true,
                 },
             });
-            break;
-
-        case "🎮 بازی کن":
+        } catch (err) {
+            console.error(err);
             await apiRequest("sendMessage", {
-                chatId,
-                text: " بازی کن 🎮",
+                chat_id: chatId,
+                text: "Error fetching games 😢",
+            });
+        }
+    }
+
+    // 5️⃣ User selects a game
+    // 5️⃣ User selects a game
+    else {
+        console.log('is in 5️⃣ User selects a game');
+
+        const gameList = await fetchMenu();
+        const selectedGame = gameList.find(g => g.title === text);
+
+        console.log("selectedGame : ", selectedGame);
+
+        if (selectedGame) {
+            await apiRequest("sendMessage", {
+                chat_id: chatId,
+                text: `شما ${selectedGame.title} را انتخاب کردید 🎮`,
+            });
+
+            // Only send the "Play" button if a valid game is selected
+            await apiRequest("sendMessage", {
+                chat_id: chatId,
+                text: "شروع بازی 🎮",
                 reply_markup: {
                     inline_keyboard: [
                         [
                             {
                                 text: "بازی کن ▶️",
-                                web_app: { url: `https://stage.gamebox.ir/game` },
+                                web_app: {
+                                    url: `https://stage.gamebox.ir/t/game/${selectedGame.id}?shTitle=${encodeURIComponent(selectedGame.title)}`,
+                                },
                             },
                         ],
                     ],
                 },
             });
-            break;
-
-        case "ℹ️ راهنما":
+        } else {
+            // User typed something that does not match any game
             await apiRequest("sendMessage", {
-                chatId,
-                text: "راهنما",
+                chat_id: chatId,
+                text: "بازی پیدا نشد 😢",
             });
-            break;
-
-        case "📜 لیست بازی‌ها":
-            try {
-                await sendGameList(chatId);
-            } catch (err) {
-                console.error(err);
-                await apiRequest("sendMessage", {
-                    chatId,
-                    text: "Error fetching games 😢",
-                });
-            }
-            break;
-
-        default:
-            // Optional: handle unknown messages
-            await apiRequest("sendMessage", {
-                chatId,
-                text: "متوجه نشدم 😅 لطفا یکی از گزینه‌ها را انتخاب کنید.",
-            });
+        }
     }
+
 
     return NextResponse.json({ ok: true });
 }
