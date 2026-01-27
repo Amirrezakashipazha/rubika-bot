@@ -17,11 +17,11 @@ export async function POST(req: NextRequest) {
     const update = await req.json();
     const message = update.message;
     if (!message) return NextResponse.json({ ok: true });
-    
+
     const chatId = message.chat.id;
     const text = message.text || "";
 
-    console.log('text is : ',text)
+    console.log('text is : ', text)
 
     // 1️⃣ Handle contact sharing
     if (message.contact) {
@@ -102,25 +102,29 @@ export async function POST(req: NextRequest) {
         const gameList = await fetchMenu();
         const selectedGame = gameList.find(g => g.title === text);
 
-        console.log("selectedGame : ",selectedGame)
-        
+        console.log("selectedGame : ", selectedGame)
+
         if (selectedGame) {
             await apiRequest("sendMessage", {
                 chat_id: chatId,
                 text: `شما ${selectedGame.title} را انتخاب کردید 🎮`,
-                reply_markup: {
-                    inline_keyboard: [
-                        [
-                            {
-                                text: "بازی کن ▶️",
-                                web_app: {
-                                    url: `https://stage.gamebox.ir/t/game/${selectedGame.id}?shTitle=${selectedGame.title}`,
-                                },
-                            },
-                        ],
-                    ],
-                },
             });
+            // await apiRequest("sendMessage", {
+            //     chat_id: chatId,
+            //     text: `شما ${selectedGame.title} را انتخاب کردید 🎮`,
+            //     reply_markup: {
+            //         inline_keyboard: [
+            //             [
+            //                 {
+            //                     text: "بازی کن ▶️",
+            //                     web_app: {
+            //                         url: `https://stage.gamebox.ir/t/game/${selectedGame.id}?shTitle=${selectedGame.title}`,
+            //                     },
+            //                 },
+            //             ],
+            //         ],
+            //     },
+            // });
         } else {
             await apiRequest("sendMessage", {
                 chat_id: chatId,
