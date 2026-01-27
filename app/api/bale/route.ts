@@ -22,10 +22,6 @@ export async function POST(req: NextRequest) {
     const chatId = message.chat.id;
     const text = message.text || "";
 
-    console.log('text is : ', text)
-
-
-
     // 1️⃣ Handle contact sharing
     if (message.contact) {
         const phoneNumber = message.contact.phone_number;
@@ -68,7 +64,7 @@ export async function POST(req: NextRequest) {
             text: "راهنما",
         });
     }
-
+ 
     // 3️⃣ /phone command
     else if (text === "/phone") {
         await apiRequest("sendMessage", {
@@ -83,7 +79,25 @@ export async function POST(req: NextRequest) {
     } else if (text === "/game") {
         await apiRequest("sendMessage", {
             chat_id: chatId,
-            text: "شروع ربات 🚀",
+            text: "شروع بازی کردن 🚀",
+            reply_markup: {
+                inline_keyboard: [
+                    [
+                        {
+                            text: "بازی کن ▶️",
+                            web_app: {
+                                url: `https://stage.gamebox.ir/game`,
+                            },
+                        },
+                    ],
+                ]
+            },
+        });
+        await apiRequest("sendMessage", {
+            chat_id: chatId,
+            text: "لیست بازی ها 🚀",
+
+
         });
     }
     // 4️⃣ /menu command
@@ -128,15 +142,9 @@ export async function POST(req: NextRequest) {
         }
     }
 
-    // 5️⃣ User selects a game
-    // 5️⃣ User selects a game
     else {
-        console.log('is in 5️⃣ User selects a game');
-
         const gameList = await fetchMenu();
         const selectedGame = gameList.find(g => g.title === text);
-
-        console.log("selectedGame : ", selectedGame);
 
         if (selectedGame) {
             await apiRequest("sendMessage", {
@@ -144,7 +152,6 @@ export async function POST(req: NextRequest) {
                 text: `شما ${selectedGame.title} را انتخاب کردید 🎮`,
             });
 
-            // Only send the "Play" button if a valid game is selected
             await apiRequest("sendMessage", {
                 chat_id: chatId,
                 text: "شروع بازی 🎮",
@@ -161,15 +168,8 @@ export async function POST(req: NextRequest) {
                     ],
                 },
             });
-        } else {
-            // User typed something that does not match any game
-            await apiRequest("sendMessage", {
-                chat_id: chatId,
-                text: "بازی پیدا نشد 😢",
-            });
         }
     }
-
 
     return NextResponse.json({ ok: true });
 }
