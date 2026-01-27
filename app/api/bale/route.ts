@@ -17,9 +17,11 @@ export async function POST(req: NextRequest) {
     const update = await req.json();
     const message = update.message;
     if (!message) return NextResponse.json({ ok: true });
-
+    
     const chatId = message.chat.id;
     const text = message.text || "";
+
+    console.log('text is : ',text)
 
     // 1️⃣ Handle contact sharing
     if (message.contact) {
@@ -95,9 +97,13 @@ export async function POST(req: NextRequest) {
 
     // 5️⃣ User selects a game
     else {
+        console.log('is in 5️⃣ User selects a game')
+
         const gameList = await fetchMenu();
         const selectedGame = gameList.find(g => g.title === text);
 
+        console.log("selectedGame : ",selectedGame)
+        
         if (selectedGame) {
             await apiRequest("sendMessage", {
                 chat_id: chatId,
