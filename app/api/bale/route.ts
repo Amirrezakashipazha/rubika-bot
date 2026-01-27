@@ -105,26 +105,30 @@ export async function POST(req: NextRequest) {
         console.log("selectedGame : ", selectedGame)
 
         if (selectedGame) {
-            await apiRequest("sendMessage", {
-                chat_id: chatId,
-                text: `شما ${selectedGame.title} را انتخاب کردید 🎮`,
-            });
             // await apiRequest("sendMessage", {
             //     chat_id: chatId,
             //     text: `شما ${selectedGame.title} را انتخاب کردید 🎮`,
-            //     reply_markup: {
-            //         inline_keyboard: [
-            //             [
-            //                 {
-            //                     text: "بازی کن ▶️",
-            //                     web_app: {
-            //                         url: `https://stage.gamebox.ir/t/game/${selectedGame.id}?shTitle=${selectedGame.title}`,
-            //                     },
-            //                 },
-            //             ],
-            //         ],
-            //     },
             // });
+            try {
+                await apiRequest("sendMessage", {
+                    chat_id: chatId,
+                    text: `شما ${selectedGame.title} را انتخاب کردید 🎮`,
+                    reply_markup: {
+                        inline_keyboard: [
+                            [
+                                {
+                                    text: "بازی کن ▶️",
+                                    web_app: {
+                                        url: `https://stage.gamebox.ir/t/game/${selectedGame.id}?shTitle=${selectedGame.title}`,
+                                    },
+                                },
+                            ],
+                        ],
+                    },
+                });
+            } catch (error) {
+                console.log('web app error : ', error)
+            }
         } else {
             await apiRequest("sendMessage", {
                 chat_id: chatId,
