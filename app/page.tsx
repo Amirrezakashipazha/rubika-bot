@@ -1,4 +1,4 @@
-import { apiHeader, fetchMenu } from "@/scripts/fetch-menu";
+// import { apiHeader, fetchMenu } from "@/scripts/fetch-menu";
 import { setWebhook } from "@/scripts/setWebhook";
 import Image from "next/image";
 
@@ -7,18 +7,18 @@ export default async function Home() {
 
   setWebhook()
 
-  const menu = await fetchMenu();
-  const homeWidjet = menu?.data?.filter(it => it.group === 'page__game__main')?.[0]?.widgets.find(w => w.blueprint_unique_name === "wb__square__game__vertical")
-  console.log(`${homeWidjet?.schema_data.source_url}`)
-  const api = await fetch(`${homeWidjet?.schema_data.source_url}`, {
-    method: 'GET',
-    headers: apiHeader,
-  });
+  // const menu = await fetchMenu();
+  // const homeWidjet = menu?.data?.filter(it => it.group === 'page__game__main')?.[0]?.widgets.find(w => w.blueprint_unique_name === "wb__square__game__vertical")
+  // console.log(`${homeWidjet?.schema_data.source_url}`)
+  // const api = await fetch(`${homeWidjet?.schema_data.source_url}`, {
+  //   method: 'GET',
+  //   headers: apiHeader,
+  // });
 
-  const data = await api.json();
-  const gameList = data.data?.results;
+  // const data = await api.json();
+  // const gameList = data.data?.results;
 
-  console.log(gameList)
+  // console.log(gameList)
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
