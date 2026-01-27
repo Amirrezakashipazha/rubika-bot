@@ -11,7 +11,7 @@ async function apiRequest(method: string, body: unknown) {
         body: JSON.stringify(body),
     });
     return res.json();
-}
+} 
 
 export async function POST(req: NextRequest) {
     const update = await req.json();
