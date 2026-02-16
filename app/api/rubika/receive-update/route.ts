@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
 
 
     if (text === "/contact") {
-      await apiRequest("sendMessage", {
+      const ddddddd = await apiRequest("sendMessage", {
         chat_id: chatId,
         text: "دریافت شماره تماس:",
         inline_keypad: {
@@ -71,6 +71,7 @@ export async function POST(req: NextRequest) {
           ],
         },
       });
+      console.log("ddddddd : ",ddddddd)
     }
 
 
