@@ -12,7 +12,7 @@ export default async function Home() {
   //   method: 'GET',
   //   headers: apiHeader,
   // });
-
+ 
   // const data = await api.json();
   // const gameList = data.data?.results;
 
