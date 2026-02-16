@@ -20,8 +20,10 @@ export async function POST(req: NextRequest) {
 
     const update = payload.update;
     const inlineMessage = payload.inline_message;
+
     console.log('update : ', update)
     console.log('inlineMessage : ', inlineMessage)
+
     // if (!update) return NextResponse.json({ ok: true });
 
     const message = update.new_message;
@@ -57,7 +59,7 @@ export async function POST(req: NextRequest) {
 
 
     if (text === "/contact") {
-      const ddddddd = await apiRequest("sendMessage", {
+      await apiRequest("sendMessage", {
         chat_id: chatId,
         text: "دریافت شماره تماس:",
         inline_keypad: {
@@ -74,7 +76,7 @@ export async function POST(req: NextRequest) {
           ],
         },
       });
-      console.log("ddddddd : ", ddddddd)
+      return NextResponse.json({ ok: true });
     }
 
 
