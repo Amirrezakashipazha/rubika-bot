@@ -19,7 +19,10 @@ export async function POST(req: NextRequest) {
     const payload = await req.json();
 
     const update = payload.update;
-    if (!update) return NextResponse.json({ ok: true });
+    const inlineMessage = payload.inline_message;
+    console.log('update : ', update)
+    console.log('inlineMessage : ', inlineMessage)
+    // if (!update) return NextResponse.json({ ok: true });
 
     const message = update.new_message;
 
@@ -71,7 +74,7 @@ export async function POST(req: NextRequest) {
           ],
         },
       });
-      console.log("ddddddd : ",ddddddd)
+      console.log("ddddddd : ", ddddddd)
     }
 
 
