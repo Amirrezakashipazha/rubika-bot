@@ -12,20 +12,14 @@ async function apiRequest(method: string, body: unknown) {
   return res.json();
 }
 
-function extractPhoneFromText(text: string): string | undefined {
-  const normalized = text.replace(/\s|-/g, "");
-  const match = normalized.match(/(?:\+98|0)?9\d{9}/);
-  return match?.[0];
-}
 
 export async function POST(req: NextRequest) {
   try {
     const payload = (await req.json()) as Record<string, any>;
 
-    const update = payload.update ?? payload;
+    const update = payload.update;
     const inlineMessage = payload.inline_message;
 
-    console.log("update : ", update);
     console.log("inlineMessage : ", inlineMessage);
 
     if (!update) return NextResponse.json({ ok: true });
@@ -34,34 +28,8 @@ export async function POST(req: NextRequest) {
     const chatId = update.chat_id;
     const text = (message?.text || "").trim();
 
-    const phone =
-      message?.contact?.phone_number ||
-      message?.contact?.phone ||
-      message?.phone_number ||
-      message?.phone ||
-      extractPhoneFromText(text);
-
-    console.log(
-      "looooooooooooooooooooooooooooooooog : ",
-      JSON.stringify({
-        payload,
-        update,
-        message,
-        chatId,
-        text,
-        phone,
-      })
-    );
-
-    if (chatId && phone) {
-      await apiRequest("sendMessage", {
-        chat_id: chatId,
-        text: `شماره شما دریافت شد: ${phone}`,
-        chat_keypad_type: "Remove",
-      });
-      return NextResponse.json({ ok: true });
-    }
-
+    console.log("message : ", message)
+    
     if (text === "/help") {
       await apiRequest("sendMessage", {
         chat_id: chatId,
@@ -92,7 +60,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true });
     }
 
-    return NextResponse.json({ ok: true });
   } catch (error) {
     console.error("receive-update error:", error);
     return NextResponse.json({ ok: true, error: "temporary_failure" });
