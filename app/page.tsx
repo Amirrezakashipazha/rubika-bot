@@ -1,11 +1,9 @@
 // import { apiHeader, fetchMenu } from "@/scripts/fetch-menu";
-import { setWebhook } from "@/scripts/setWebhook";
 import Image from "next/image";
 
 
 export default async function Home() {
 
-  setWebhook()
 
   // const menu = await fetchMenu();
   // const homeWidjet = menu?.data?.filter(it => it.group === 'page__game__main')?.[0]?.widgets.find(w => w.blueprint_unique_name === "wb__square__game__vertical")
