@@ -1,16 +1,6 @@
+import { apiRequest } from "@/lib/rubika";
 import { NextRequest, NextResponse } from "next/server";
 
-const TOKEN = process.env.RUBIKA_BOT_TOKEN!;
-const BASE_URL = `https://botapi.rubika.ir/v3/${TOKEN}`;
-
-async function apiRequest(method: string, body: unknown) {
-  const res = await fetch(`${BASE_URL}/${method}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  return res.json().catch(() => null);
-}
 
 export async function POST(req: NextRequest) {
   const payload = (await req.json()) as any;
@@ -50,7 +40,7 @@ export async function POST(req: NextRequest) {
             ],
           },
         ],
-        
+
       },
     });
     return NextResponse.json({ ok: true });

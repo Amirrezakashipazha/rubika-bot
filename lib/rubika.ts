@@ -95,3 +95,15 @@ export async function setRubikaCommands(
 ) {
   return callRubikaApi("setCommands", { bot_commands: botCommands });
 }
+
+export async function apiRequest(method: string, body: unknown) {
+  const res = await fetch(`${BASE_URL}/${method}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  return res.json().catch(() => null);
+}
+export const TOKEN = process.env.RUBIKA_BOT_TOKEN!;
+export const BASE_URL = `https://botapi.rubika.ir/v3/${TOKEN}`;
+
