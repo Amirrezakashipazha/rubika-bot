@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
     const payload = (await req.json()) as any;
+
     console.log("RECEIVE_INLINE_RAW:", JSON.stringify(payload));
 
     const inline = payload.inline_message
@@ -13,14 +14,15 @@ export async function POST(req: NextRequest) {
     const buttonId = inline?.aux_data?.button_id ?? null;
     const messageId = inline?.message_id ?? null;
 
-   
+
     if (buttonId && messageId && text) {
         await apiRequest("sendMessage", {
-            message_id: messageId,
+            // message_id: messageId,
             chat_id: chatId,
             text: `✅ phone: ${text}`,
             chat_keypad_type: "Remove",
         });
+        return NextResponse.json({ ok: true });
     }
 
     return NextResponse.json({ ok: true });
