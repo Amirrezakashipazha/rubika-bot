@@ -126,7 +126,29 @@ async function sendSelectedGame(chatId: string, game: GameItem) {
   const gameUrl = `https://stage.gamebox.ir/t/game/${game.id}?shTitle=${encodeURIComponent(
     game.title
   )}`;
-  await sendRubikaMessage(chatId, `You selected: ${game.title}\nPlay: ${gameUrl}`);
+
+  try {
+    await sendRubikaMessage(chatId, `You selected: ${game.title}\nTap to open:`, {
+      inline_keypad: {
+        rows: [
+          {
+            buttons: [
+              {
+                type: "Link",
+                button_text: `Open ${game.title}`,
+                link: gameUrl,
+                url: gameUrl,
+                id: `open_game_${game.id}`,
+              },
+            ],
+          },
+        ],
+      },
+    });
+  } catch (error) {
+    console.error("sendSelectedGame link button failed, using text fallback:", error);
+    await sendRubikaMessage(chatId, `You selected: ${game.title}\nPlay: ${gameUrl}`);
+  }
 }
 
 async function sendPhonePrompt(chatId: string) {
@@ -137,7 +159,28 @@ async function sendPhonePrompt(chatId: string) {
 }
 
 async function sendStartGame(chatId: string) {
-  await sendRubikaMessage(chatId, `Start game:\n${GAME_APP_URL}`);
+  try {
+    await sendRubikaMessage(chatId, "Tap to start the game inside Rubika:", {
+      inline_keypad: {
+        rows: [
+          {
+            buttons: [
+              {
+                type: "Link",
+                button_text: "Open Game",
+                link: GAME_APP_URL,
+                url: GAME_APP_URL,
+                id: "open_game_main",
+              },
+            ],
+          },
+        ],
+      },
+    });
+  } catch (error) {
+    console.error("sendStartGame link button failed, using text fallback:", error);
+    await sendRubikaMessage(chatId, `Start game:\n${GAME_APP_URL}`);
+  }
 }
 
 export async function POST(request: NextRequest) {

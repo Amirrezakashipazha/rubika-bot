@@ -5,11 +5,21 @@ const RUBIKA_API_BASE_URL =
 type JsonObject = Record<string, unknown>;
 type JsonValue = string | number | boolean | null | JsonObject | JsonValue[];
 
-export type RubikaButton = {
+export type RubikaSimpleButton = {
   id: string;
   type: "Simple";
   button_text: string;
 };
+
+export type RubikaLinkButton = {
+  type: "Link";
+  button_text: string;
+  link?: string;
+  url?: string;
+  id?: string;
+};
+
+export type RubikaButton = RubikaSimpleButton | RubikaLinkButton;
 
 export type RubikaKeypad = {
   rows: Array<{ buttons: RubikaButton[] }>;
