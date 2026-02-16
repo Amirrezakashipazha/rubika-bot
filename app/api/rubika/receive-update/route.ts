@@ -19,13 +19,21 @@ export async function POST(req: NextRequest) {
     const payload = await req.json();
     console.log("payload : ", payload)
 
-    const update: Update = payload.update;
+    const update = payload.update;
     if (!update) return NextResponse.json({ ok: true });
 
     const message = update.new_message;
+    console.log("message : ",message)
     const chatId = update.chat_id;
     const text = message.text || "";
+    // 1) Handle contact/phone response (after AskMyPhoneNumber)
+    const phone =
+      message?.contact?.phone_number ||
+      message?.contact?.phone ||
+      message?.phone_number ||
+      message?.phone;
 
+      console.log("phone : ",phone)
 
     if (text === "/help") {
       await apiRequest("sendMessage", {
