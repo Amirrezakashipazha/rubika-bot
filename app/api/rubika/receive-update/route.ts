@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sendRubikaMessage } from "@/lib/rubika";
 import { fetchMenu } from "@/scripts/fetch-menu";
+import { Update } from "@/model/main.model";
 
 
 const TOKEN = process.env.RUBIKA_BOT_TOKEN!;
@@ -17,19 +18,23 @@ async function apiRequest(method: string, body: unknown) {
 
 
 
+
 export async function POST(req: NextRequest) {
   try {
 
-    const update = await req.json();
-    console.log("update : ",update)
-    const message = update.message;
+    const payload = await req.json();
+
+    const update: Update = payload.update
+    if (!update) return NextResponse.json({ ok: true });
+
+    const message = update.new_message;
 
 
-    if (!message) return NextResponse.json({ ok: true });
-
-    const chatId = message.chat.id;
+    const chatId = update.chat_id;
     const text = message.text || "";
 
+    console.log("chatId : ", chatId)
+    console.log("text : ", text)
 
     // 1️⃣ Handle contact sharing
     // if (message.contact) {
@@ -41,10 +46,25 @@ export async function POST(req: NextRequest) {
     //   return NextResponse.json({ ok: true });
     // } 
 
+
     if (text === "/help") {
       await apiRequest("sendMessage", {
         chat_id: chatId,
         text: "راهنما",
+      });
+    }
+
+    if (text === "/contact") {
+      await apiRequest("sendContact", {
+        chat_id: chatId,
+        text: "شماره تماس خود را بفرستید",
+      });
+    }
+
+    if (text === "/location") {
+      await apiRequest("sendLocation", {
+        chat_id: chatId,
+        text: "موقعیت مکانی خود را بفرستید",
       });
     }
 
