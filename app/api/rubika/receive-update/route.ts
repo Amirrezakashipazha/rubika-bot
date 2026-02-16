@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
       await apiRequest("sendMessage", {
         chat_id: chatId,
         text: "دریافت شماره تماس:",
-        chat_keypad: {
+        inline_keypad: {
           rows: [
             {
               buttons: [
@@ -55,7 +55,6 @@ export async function POST(req: NextRequest) {
             },
           ],
         },
-        chat_keypad_type: "New",
       });
       return NextResponse.json({ ok: true });
     }
@@ -64,7 +63,7 @@ export async function POST(req: NextRequest) {
       await apiRequest("sendMessage", {
         chat_id: chatId,
         text: "دریافت لوکیشن:",
-        chat_keypad: {
+        inline_keypad: {
           rows: [
             {
               buttons: [
@@ -77,7 +76,6 @@ export async function POST(req: NextRequest) {
             },
           ],
         },
-        chat_keypad_type: "New",
       });
       return NextResponse.json({ ok: true });
     }

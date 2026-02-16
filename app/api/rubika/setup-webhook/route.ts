@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
       },
       body: JSON.stringify({
         "url": "https://rubika-bot-one.vercel.app/api/rubika/receive-update",
-        "type": "GetSelectionItem"
+        "type": "ReceiveInlineMessage"
       })
     });
 
@@ -26,3 +26,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ ok: false, error: error });
   }
 }
+
+//ReceiveUpdate
+//ReceiveInlineMessage
+//ReceiveQuery
+//GetSelectionItem
+//SearchSelectionItems
