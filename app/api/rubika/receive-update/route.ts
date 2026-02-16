@@ -36,19 +36,18 @@ export async function POST(req: NextRequest) {
     }
 
 
-    if (text === "/open") {
+    if (text === "/contact") {
       await apiRequest("sendMessage", {
         chat_id: chatId,
-        text: "Open the app:",
+        text: "دریافت شماره تماس:",
         inline_keypad: {
           rows: [
             {
               buttons: [
                 {
-                  id: "open_ext",
-                  type: "Link",
-                  button_text: "Open App",
-                  url: "https://www.google.com",
+                  id: "my_contact",
+                  type: "AskMyPhoneNumber",
+                  button_text: "شماره موبایل من",
                 },
               ],
             },
