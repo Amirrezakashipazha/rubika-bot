@@ -27,6 +27,7 @@ type GameItem = {
 };
 
 const GAME_APP_URL = "https://stage.gamebox.ir/game";
+const MAX_MENU_GAMES = 12;
 
 function normalizeIranPhoneNumber(input: string) {
   const cleaned = input.replace(/\s|-/g, "");
@@ -49,6 +50,29 @@ function extractIncoming(payload: RubikaUpdatePayload) {
   return { text, chatId, buttonId };
 }
 
+function normalizeCommand(text?: string) {
+  if (!text?.startsWith("/")) {
+    return null;
+  }
+
+  const firstToken = text.split(/\s+/)[0];
+  return firstToken.toLowerCase().split("@")[0];
+}
+
+function sanitizeGameList(input: unknown): GameItem[] {
+  if (!Array.isArray(input)) {
+    return [];
+  }
+
+  return input
+    .filter((item): item is Record<string, unknown> => Boolean(item) && typeof item === "object")
+    .map((item) => ({
+      id: Number(item.id),
+      title: String(item.title ?? "").trim(),
+    }))
+    .filter((item) => Number.isFinite(item.id) && item.id > 0 && item.title.length > 0);
+}
+
 function buildGameKeypad(games: GameItem[]) {
   const rows: Array<{ buttons: Array<{ id: string; type: "Simple"; button_text: string }> }> =
     [];
@@ -69,20 +93,33 @@ function buildGameKeypad(games: GameItem[]) {
 }
 
 async function sendMenu(chatId: string) {
-  const gameList = (await fetchMenu()) as GameItem[];
+  const gameList = sanitizeGameList(await fetchMenu());
   if (!gameList?.length) {
     await sendRubikaMessage(chatId, "No games are available right now.");
     return;
   }
 
-  await sendRubikaMessage(chatId, "Game list:", {
-    chat_keypad_type: "New",
-    chat_keypad: {
-      rows: buildGameKeypad(gameList),
-      resize_keyboard: true,
-      one_time_keyboard: false,
-    },
-  });
+  const limitedGames = gameList.slice(0, MAX_MENU_GAMES);
+
+  try {
+    await sendRubikaMessage(chatId, "Game list:", {
+      chat_keypad_type: "New",
+      chat_keypad: {
+        rows: buildGameKeypad(limitedGames),
+        resize_keyboard: true,
+        one_time_keyboard: false,
+      },
+    });
+  } catch (error) {
+    console.error("sendMenu keypad failed, using text fallback:", error);
+    const fallbackList = limitedGames
+      .map((game, index) => `${index + 1}. ${game.title}`)
+      .join("\n");
+    await sendRubikaMessage(
+      chatId,
+      `Game list:\n${fallbackList}\n\nPlease tap /menu again if keypad does not appear.`
+    );
+  }
 }
 
 async function sendSelectedGame(chatId: string, game: GameItem) {
@@ -107,17 +144,18 @@ export async function POST(request: NextRequest) {
   try {
     const payload = (await request.json()) as RubikaUpdatePayload;
     const { text, chatId, buttonId } = extractIncoming(payload);
+    const command = normalizeCommand(text);
 
     if (!chatId) {
       return NextResponse.json({ ok: true, ignored: true });
     }
 
-    if (buttonId === "menu" || text === "/menu") {
+    if (buttonId === "menu" || command === "/menu") {
       await sendMenu(chatId);
       return NextResponse.json({ ok: true });
     }
 
-    if (buttonId === "help" || text === "/help") {
+    if (buttonId === "help" || command === "/help") {
       await sendRubikaMessage(
         chatId,
         "Commands:\n/start\n/menu\n/game\n/help\n/phone"
@@ -125,17 +163,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ ok: true });
     }
 
-    if (buttonId === "start_game" || text === "/game") {
+    if (buttonId === "start_game" || command === "/game") {
       await sendStartGame(chatId);
       return NextResponse.json({ ok: true });
     }
 
-    if (buttonId === "send_phone" || text === "/phone") {
+    if (buttonId === "send_phone" || command === "/phone") {
       await sendPhonePrompt(chatId);
       return NextResponse.json({ ok: true });
     }
 
-    if (text === "/start") {
+    if (command === "/start") {
       await sendRubikaMessage(
         chatId,
         "Welcome. Rubika bot is active.\nUse buttons below.",
@@ -184,7 +222,7 @@ export async function POST(request: NextRequest) {
 
     if (buttonId?.startsWith("game_")) {
       const gameId = Number(buttonId.replace("game_", ""));
-      const gameList = (await fetchMenu()) as GameItem[];
+      const gameList = sanitizeGameList(await fetchMenu());
       const selectedGame = gameList.find((g) => g.id === gameId);
       if (selectedGame) {
         await sendSelectedGame(chatId, selectedGame);
@@ -195,7 +233,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (text) {
-      const gameList = (await fetchMenu()) as GameItem[];
+      const gameList = sanitizeGameList(await fetchMenu());
       const selectedGame = gameList.find((g) => g.title === text);
       if (selectedGame) {
         await sendSelectedGame(chatId, selectedGame);
