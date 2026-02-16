@@ -21,6 +21,7 @@ export async function POST(req: NextRequest) {
   try {
 
     const update = await req.json();
+    console.log("update : ",update)
     const message = update.message;
 
     console.log("message : ",message)
