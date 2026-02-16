@@ -37,7 +37,7 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 ## Rubika Bot
 
-This project now includes a Rubika bot implementation using the official Bot API webhook model.
+This project now includes a simple Rubika bot using webhook + commands.
 
 ### Environment variables
 
@@ -51,7 +51,6 @@ RUBIKA_WEBHOOK_BASE_URL=https://your-public-domain
 ### Routes
 
 - `POST /api/rubika/receive-update`: main bot updates (`/start`, `/help`, `/menu`, `/game`, `/phone`) and game selection via `fetchMenu()`
-- `POST /api/rubika/receive-inline`: inline update receiver
 - `GET /api/rubika/setup-webhook`: register webhook endpoints
 - `POST /api/rubika/setup-webhook` with JSON body `{ "baseUrl": "https://your-domain" }`: register webhook endpoints
 
@@ -68,13 +67,13 @@ https://your-domain/api/rubika/setup-webhook
 That calls `updateBotEndpoints` and registers:
 
 - `ReceiveUpdate -> /api/rubika/receive-update`
-- `ReceiveInlineMessage -> /api/rubika/receive-inline`
 
 ### Buttons
 
 After `/start`, the bot shows keypad buttons:
 
 - `Game List`: fetches data from `fetchMenu()` and shows selectable games
+- `Start Game`: sends link to full game app
 - `Help`: prints command guide
 - `Send Mobile`: asks user to send mobile number
 

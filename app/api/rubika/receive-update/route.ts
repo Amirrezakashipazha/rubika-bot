@@ -26,6 +26,8 @@ type GameItem = {
   title: string;
 };
 
+const GAME_APP_URL = "https://stage.gamebox.ir/game";
+
 function normalizeIranPhoneNumber(input: string) {
   const cleaned = input.replace(/\s|-/g, "");
   const localPattern = /^09\d{9}$/;
@@ -97,100 +99,114 @@ async function sendPhonePrompt(chatId: string) {
   );
 }
 
+async function sendStartGame(chatId: string) {
+  await sendRubikaMessage(chatId, `Start game:\n${GAME_APP_URL}`);
+}
+
 export async function POST(request: NextRequest) {
-  const payload = (await request.json()) as RubikaUpdatePayload;
-  const { text, chatId, buttonId } = extractIncoming(payload);
+  try {
+    const payload = (await request.json()) as RubikaUpdatePayload;
+    const { text, chatId, buttonId } = extractIncoming(payload);
 
-  if (!chatId) {
-    return NextResponse.json({ ok: true, ignored: true });
-  }
+    if (!chatId) {
+      return NextResponse.json({ ok: true, ignored: true });
+    }
 
-  if (buttonId === "menu" || text === "/menu") {
-    await sendMenu(chatId);
-    return NextResponse.json({ ok: true });
-  }
-
-  if (buttonId === "help" || text === "/help") {
-    await sendRubikaMessage(
-      chatId,
-      "Commands:\n/start\n/help\n/menu\n/game\n/phone\nSelect a game from /menu"
-    );
-    return NextResponse.json({ ok: true });
-  }
-
-  if (buttonId === "send_phone" || text === "/phone") {
-    await sendPhonePrompt(chatId);
-    return NextResponse.json({ ok: true });
-  }
-
-  if (text === "/start") {
-    await sendRubikaMessage(
-      chatId,
-      "Welcome. Rubika bot is active.\nUse buttons below.",
-      {
-        chat_keypad_type: "New",
-        chat_keypad: {
-          rows: [
-            {
-              buttons: [
-                { id: "menu", type: "Simple", button_text: "Game List" },
-                { id: "help", type: "Simple", button_text: "Help" },
-                { id: "send_phone", type: "Simple", button_text: "Send Mobile" },
-              ],
-            },
-          ],
-          resize_keyboard: true,
-          one_time_keyboard: false,
-        },
-      }
-    );
-    return NextResponse.json({ ok: true });
-  }
-
-  if (text === "/game") {
-    await sendRubikaMessage(chatId, "Use /menu and choose a game to play.");
-    return NextResponse.json({ ok: true });
-  }
-
-  if (text?.startsWith("/phone ")) {
-    const maybePhone = normalizeIranPhoneNumber(text.replace("/phone ", "").trim());
-    if (!maybePhone) {
-      await sendRubikaMessage(chatId, "Invalid number format. Use: 09123456789");
+    if (buttonId === "menu" || text === "/menu") {
+      await sendMenu(chatId);
       return NextResponse.json({ ok: true });
     }
-    await sendRubikaMessage(chatId, `Your mobile number was received: ${maybePhone}`);
-    return NextResponse.json({ ok: true });
-  }
 
-  if (text) {
-    const maybePhone = normalizeIranPhoneNumber(text);
-    if (maybePhone) {
+    if (buttonId === "help" || text === "/help") {
+      await sendRubikaMessage(
+        chatId,
+        "Commands:\n/start\n/menu\n/game\n/help\n/phone"
+      );
+      return NextResponse.json({ ok: true });
+    }
+
+    if (buttonId === "start_game" || text === "/game") {
+      await sendStartGame(chatId);
+      return NextResponse.json({ ok: true });
+    }
+
+    if (buttonId === "send_phone" || text === "/phone") {
+      await sendPhonePrompt(chatId);
+      return NextResponse.json({ ok: true });
+    }
+
+    if (text === "/start") {
+      await sendRubikaMessage(
+        chatId,
+        "Welcome. Rubika bot is active.\nUse buttons below.",
+        {
+          chat_keypad_type: "New",
+          chat_keypad: {
+            rows: [
+              {
+                buttons: [
+                  { id: "menu", type: "Simple", button_text: "Game List" },
+                  { id: "start_game", type: "Simple", button_text: "Start Game" },
+                ],
+              },
+              {
+                buttons: [
+                  { id: "help", type: "Simple", button_text: "Help" },
+                  { id: "send_phone", type: "Simple", button_text: "Send Mobile" },
+                ],
+              },
+            ],
+            resize_keyboard: true,
+            one_time_keyboard: false,
+          },
+        }
+      );
+      return NextResponse.json({ ok: true });
+    }
+
+    if (text?.startsWith("/phone ")) {
+      const maybePhone = normalizeIranPhoneNumber(text.replace("/phone ", "").trim());
+      if (!maybePhone) {
+        await sendRubikaMessage(chatId, "Invalid number format. Use: 09123456789");
+        return NextResponse.json({ ok: true });
+      }
       await sendRubikaMessage(chatId, `Your mobile number was received: ${maybePhone}`);
       return NextResponse.json({ ok: true });
     }
-  }
 
-  if (buttonId?.startsWith("game_")) {
-    const gameId = Number(buttonId.replace("game_", ""));
-    const gameList = (await fetchMenu()) as GameItem[];
-    const selectedGame = gameList.find((g) => g.id === gameId);
-    if (selectedGame) {
-      await sendSelectedGame(chatId, selectedGame);
-    } else {
-      await sendRubikaMessage(chatId, "Selected game was not found. Please try /menu again.");
+    if (text) {
+      const maybePhone = normalizeIranPhoneNumber(text);
+      if (maybePhone) {
+        await sendRubikaMessage(chatId, `Your mobile number was received: ${maybePhone}`);
+        return NextResponse.json({ ok: true });
+      }
     }
-    return NextResponse.json({ ok: true });
-  }
 
-  if (text) {
-    const gameList = (await fetchMenu()) as GameItem[];
-    const selectedGame = gameList.find((g) => g.title === text);
-    if (selectedGame) {
-      await sendSelectedGame(chatId, selectedGame);
+    if (buttonId?.startsWith("game_")) {
+      const gameId = Number(buttonId.replace("game_", ""));
+      const gameList = (await fetchMenu()) as GameItem[];
+      const selectedGame = gameList.find((g) => g.id === gameId);
+      if (selectedGame) {
+        await sendSelectedGame(chatId, selectedGame);
+      } else {
+        await sendRubikaMessage(chatId, "Selected game was not found. Please try /menu again.");
+      }
       return NextResponse.json({ ok: true });
     }
-  }
 
-  await sendRubikaMessage(chatId, "Use /menu to view games.");
-  return NextResponse.json({ ok: true });
+    if (text) {
+      const gameList = (await fetchMenu()) as GameItem[];
+      const selectedGame = gameList.find((g) => g.title === text);
+      if (selectedGame) {
+        await sendSelectedGame(chatId, selectedGame);
+        return NextResponse.json({ ok: true });
+      }
+    }
+
+    await sendRubikaMessage(chatId, "Use /menu to view games.");
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    console.error("receive-update error:", error);
+    return NextResponse.json({ ok: true, error: "temporary_failure" });
+  }
 }

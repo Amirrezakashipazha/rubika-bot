@@ -1,44 +1,33 @@
 import { NextRequest, NextResponse } from "next/server";
 import { callRubikaApi, setRubikaCommands } from "@/lib/rubika";
 
-type EndpointType = "ReceiveUpdate" | "ReceiveInlineMessage";
+type EndpointType = "ReceiveUpdate";
 
 function buildEndpoints(baseUrl: string) {
   const normalized = baseUrl.replace(/\/+$/, "");
-  const endpoints: Array<{ type: EndpointType; url: string }> = [
-    {
-      type: "ReceiveUpdate",
-      url: `${normalized}/api/rubika/receive-update`,
-    },
-    {
-      type: "ReceiveInlineMessage",
-      url: `${normalized}/api/rubika/receive-inline`,
-    },
-  ];
-  return endpoints;
+  return {
+    type: "ReceiveUpdate" as EndpointType,
+    url: `${normalized}/api/rubika/receive-update`,
+  };
 }
 
 async function registerWebhook(baseUrl: string) {
-  const endpoints = buildEndpoints(baseUrl);
-  const [updateEndpointResponse, inlineEndpointResponse, commandsResponse] =
+  const endpoint = buildEndpoints(baseUrl);
+  const [updateEndpointResponse, commandsResponse] =
     await Promise.all([
       callRubikaApi("updateBotEndpoints", {
-        url: endpoints[0].url,
-        type: endpoints[0].type,
-      }),
-      callRubikaApi("updateBotEndpoints", {
-        url: endpoints[1].url,
-        type: endpoints[1].type,
+        url: endpoint.url,
+        type: endpoint.type,
       }),
       setRubikaCommands([
         { command: "start", description: "Start bot" },
         { command: "help", description: "Show help" },
         { command: "menu", description: "Show game list" },
-        { command: "game", description: "How to start game" },
+        { command: "game", description: "Start game app" },
         { command: "phone", description: "Send mobile number" },
       ]),
     ]);
-  return { updateEndpointResponse, inlineEndpointResponse, commandsResponse };
+  return { updateEndpointResponse, commandsResponse };
 }
 
 export async function POST(request: NextRequest) {
