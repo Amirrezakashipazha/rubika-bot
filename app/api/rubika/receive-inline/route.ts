@@ -13,12 +13,7 @@ export async function POST(req: NextRequest) {
     const buttonId = inline?.aux_data?.button_id ?? null;
     const messageId = inline?.message_id ?? null;
 
-    if (buttonId && messageId && text) {
-        return NextResponse.json({
-            message_id: messageId,
-            inline_keypad: { rows: [] },
-        });
-    }
+   
     if (buttonId && messageId && text) {
         await apiRequest("sendMessage", {
             message_id: messageId,
