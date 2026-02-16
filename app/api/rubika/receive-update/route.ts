@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     const text = (message?.text || "").trim();
 
     console.log("message : ", message)
-    
+
     if (text === "/help") {
       await apiRequest("sendMessage", {
         chat_id: chatId,
@@ -59,7 +59,30 @@ export async function POST(req: NextRequest) {
       });
       return NextResponse.json({ ok: true });
     }
+
+    if (text === "/location") {
+      await apiRequest("sendMessage", {
+        chat_id: chatId,
+        text: "دریافت لوکیشن:",
+        chat_keypad: {
+          rows: [
+            {
+              buttons: [
+                {
+                  id: "my_location",
+                  type: "AskMyLocation",
+                  button_text: "لوکیشن من",
+                },
+              ],
+            },
+          ],
+        },
+        chat_keypad_type: "New",
+      });
       return NextResponse.json({ ok: true });
+    }
+
+    return NextResponse.json({ ok: true });
 
   } catch (error) {
     console.error("receive-update error:", error);
