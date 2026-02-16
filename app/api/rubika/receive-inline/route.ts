@@ -8,6 +8,7 @@ export async function POST(req: NextRequest) {
     const inline = payload.inline_message
 
     const text = inline.text
+    const chatId = inline.chat_id
 
     const buttonId = inline?.aux_data?.button_id ?? null;
     const messageId = inline?.message_id ?? null;
@@ -21,6 +22,7 @@ export async function POST(req: NextRequest) {
     if (buttonId && messageId && text) {
         await apiRequest("sendMessage", {
             message_id: messageId,
+            chat_id: chatId,
             text: `✅ phone: ${text}`,
             chat_keypad_type: "Remove",
         });
