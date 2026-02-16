@@ -23,20 +23,25 @@ export async function POST(req: NextRequest) {
     const update = await req.json();
     const message = update.message;
 
+    console.log("message : ",message)
+
     if (!message) return NextResponse.json({ ok: true });
 
     const chatId = message.chat.id;
     const text = message.text || "";
 
+    console.log("chatId : ",chatId)
+    console.log("text : ",text)
+
     // 1️⃣ Handle contact sharing
-    if (message.contact) {
-      const phoneNumber = message.contact.phone_number;
-      await apiRequest("sendMessage", {
-        chat_id: chatId,
-        text: `شماره موبایل دریافتی: ${phoneNumber}`,
-      });
-      return NextResponse.json({ ok: true });
-    }
+    // if (message.contact) {
+    //   const phoneNumber = message.contact.phone_number;
+    //   await apiRequest("sendMessage", {
+    //     chat_id: chatId,
+    //     text: `شماره موبایل دریافتی: ${phoneNumber}`,
+    //   });
+    //   return NextResponse.json({ ok: true });
+    // }
 
     if (text === "/help") {
       await apiRequest("sendMessage", {
@@ -46,7 +51,7 @@ export async function POST(req: NextRequest) {
     }
 
 
-    // return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true });
   } catch (error) {
     console.error("receive-update error:", error);
     return NextResponse.json({ ok: true, error: "temporary_failure" });
