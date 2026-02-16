@@ -17,20 +17,15 @@ export async function POST(req: NextRequest) {
   try {
 
     const payload = await req.json();
-    console.log("payload : ", payload)
 
     const update = payload.update;
-    console.log("update : ",update)
     if (!update) return NextResponse.json({ ok: true });
 
     const message = update.new_message;
-    console.log("message : ",message)
 
     const chatId = update.chat_id;
-    console.log("chatId : ",chatId)
-    
+
     const text = message?.text || "";
-    console.log("text : ",text)
 
 
     // 1) Handle contact/phone response (after AskMyPhoneNumber)
@@ -40,7 +35,14 @@ export async function POST(req: NextRequest) {
       message?.phone_number ||
       message?.phone;
 
-      console.log("phone : ",phone)
+    console.log("looooooooooooooooooooooooooooooooog : ", JSON.stringify({
+      payload: payload,
+      update: update,
+      message: message,
+      chatId: chatId,
+      text: text,
+      phone: phone,
+    }))
 
     if (text === "/help") {
       await apiRequest("sendMessage", {
