@@ -1,9 +1,3 @@
-export type ContactMessage = {
-  phone_number: string;
-  first_name?: string;
-  last_name?: string;
-  user_id?: string;
-};
 
 export type Update = {
   type: string;
@@ -15,7 +9,6 @@ export type Update = {
     is_edited: boolean;
     sender_type: string;
     sender_id: string;
-    contact?: ContactMessage;
     aux_data?: {
       start_id: string | null;
       button_id: string;
