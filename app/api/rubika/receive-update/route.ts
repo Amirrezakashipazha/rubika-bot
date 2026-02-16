@@ -9,81 +9,58 @@ async function apiRequest(method: string, body: unknown) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
-  return res.json();
+  return res.json().catch(() => null);
 }
 
-
 export async function POST(req: NextRequest) {
-  try {
-    const payload = (await req.json()) as Record<string, any>;
+  const payload = (await req.json()) as any;
+  console.log("RECEIVE_UPDATE_RAW:", JSON.stringify(payload));
 
-    const update = payload.update;
-    const inlineMessage = payload.inline_message;
+  const update = payload.update ?? payload;
+  if (!update?.chat_id || !update?.new_message) return NextResponse.json({ ok: true });
 
-    console.log("inlineMessage : ", inlineMessage);
+  const chatId = update.chat_id as string;
+  const msg = update.new_message ?? {};
+  const text = typeof msg.text === "string" ? msg.text.trim() : "";
 
-    if (!update) return NextResponse.json({ ok: true });
+  const phone = msg?.contact_message?.phone_number ?? null;
 
-    const message = update.new_message;
-    const chatId = update.chat_id;
-    const text = (message?.text || "").trim();
-
-    console.log("message : ", message)
-
-    if (text === "/help") {
-      await apiRequest("sendMessage", {
-        chat_id: chatId,
-        text: "راهنما",
-      });
-      return NextResponse.json({ ok: true });
-    }
-
-    if (text === "/contact") {
-      await apiRequest("sendMessage", {
-        chat_id: chatId,
-        text: "دریافت شماره تماس:",
-        inline_keypad: {
-          rows: [
-            {
-              buttons: [
-                {
-                  id: "my_contact",
-                  type: "AskMyPhoneNumber",
-                  button_text: "شماره موبایل من",
-                },
-              ],
-            },
-          ],
-        },
-      });
-      return NextResponse.json({ ok: true });
-    }
-
-    if (text === "/location") {
-      await apiRequest("sendMessage", {
-        chat_id: chatId,
-        text: "دریافت لوکیشن:",
-        inline_keypad: {
-          rows: [
-            {
-              buttons: [
-                {
-                  id: "my_location",
-                  type: "AskMyLocation",
-                  button_text: "لوکیشن من",
-                },
-              ],
-            },
-          ],
-        },
-      });
-      return NextResponse.json({ ok: true });
-    }
-
+  if (phone) {
+    await apiRequest("sendMessage", {
+      chat_id: chatId,
+      text: `✅ phone: ${phone}`,
+      chat_keypad_type: "Remove",
+    });
     return NextResponse.json({ ok: true });
-
-  } catch (error) {
-    console.error("receive-update error:", error);
-    return NextResponse.json({ ok: true, error: "temporary_failure" });
   }
+
+  if (text === "/start" || text === "/contact") {
+    await apiRequest("sendMessage", {
+      chat_id: chatId,
+      text: "Send your phone:",
+      chat_keypad_type: "New",
+      chat_keypad: {
+        resize_keyboard: true,
+        one_time_keyboard: true,
+        rows: [
+          {
+            buttons: [
+              {
+                id: "share_phone",
+                type: "AskMyPhoneNumber",
+                button_text: "ارسال شماره موبایل",
+              },
+            ],
+          },
+        ],
+      },
+    });
+    return NextResponse.json({ ok: true });
+  }
+
+  return NextResponse.json({ ok: true });
+}
+
+export async function HEAD() {
+  return new NextResponse(null, { status: 200 });
 }
