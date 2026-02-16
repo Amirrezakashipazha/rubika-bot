@@ -20,11 +20,7 @@ export async function GET(request: NextRequest) {
 
     const res = await api.json()
 
-    if (res.ok) {
-      return NextResponse.json({ ok: true, data: res });
-    }
-
-    return NextResponse.json({ ok: false, error: res });
+    return NextResponse.json(res);
 
   } catch (error) {
     return NextResponse.json({ ok: false, error: error });
