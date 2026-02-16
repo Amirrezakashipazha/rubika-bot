@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
     //     text: `شماره موبایل دریافتی: ${phoneNumber}`,
     //   });
     //   return NextResponse.json({ ok: true });
-    // }
+    // } 
 
     if (text === "/help") {
       await apiRequest("sendMessage", {
