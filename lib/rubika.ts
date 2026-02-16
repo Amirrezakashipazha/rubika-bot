@@ -14,9 +14,8 @@ export type RubikaSimpleButton = {
 export type RubikaLinkButton = {
   type: "Link";
   button_text: string;
-  link?: string;
-  url?: string;
-  id?: string;
+  // Rubika Link buttons use `id` as the target URL.
+  id: string;
 };
 
 export type RubikaButton = RubikaSimpleButton | RubikaLinkButton;

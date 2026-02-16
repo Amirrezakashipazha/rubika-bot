@@ -128,7 +128,7 @@ async function sendSelectedGame(chatId: string, game: GameItem) {
   )}`;
 
   try {
-    await sendRubikaMessage(chatId, `You selected: ${game.title}\nTap to open:`, {
+    await sendRubikaMessage(chatId, `You selected: ${game.title}\n${gameUrl}`, {
       inline_keypad: {
         rows: [
           {
@@ -136,9 +136,7 @@ async function sendSelectedGame(chatId: string, game: GameItem) {
               {
                 type: "Link",
                 button_text: `Open ${game.title}`,
-                link: gameUrl,
-                url: gameUrl,
-                id: `open_game_${game.id}`,
+                id: gameUrl,
               },
             ],
           },
@@ -160,7 +158,7 @@ async function sendPhonePrompt(chatId: string) {
 
 async function sendStartGame(chatId: string) {
   try {
-    await sendRubikaMessage(chatId, "Tap to start the game inside Rubika:", {
+    await sendRubikaMessage(chatId, `Tap to start the game:\n${GAME_APP_URL}`, {
       inline_keypad: {
         rows: [
           {
@@ -168,9 +166,7 @@ async function sendStartGame(chatId: string) {
               {
                 type: "Link",
                 button_text: "Open Game",
-                link: GAME_APP_URL,
-                url: GAME_APP_URL,
-                id: "open_game_main",
+                id: GAME_APP_URL,
               },
             ],
           },
