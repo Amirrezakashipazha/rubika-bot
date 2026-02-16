@@ -20,12 +20,19 @@ export async function POST(req: NextRequest) {
     console.log("payload : ", payload)
 
     const update = payload.update;
+    console.log("update : ",update)
     if (!update) return NextResponse.json({ ok: true });
 
     const message = update.new_message;
     console.log("message : ",message)
+
     const chatId = update.chat_id;
-    const text = message.text || "";
+    console.log("chatId : ",chatId)
+    
+    const text = message?.text || "";
+    console.log("text : ",text)
+
+
     // 1) Handle contact/phone response (after AskMyPhoneNumber)
     const phone =
       message?.contact?.phone_number ||
