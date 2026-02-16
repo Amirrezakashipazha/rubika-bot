@@ -38,10 +38,7 @@ export async function POST(req: NextRequest) {
     await apiRequest("sendMessage", {
       chat_id: chatId,
       text: "Send your phone:",
-      chat_keypad_type: "New",
-      chat_keypad: {
-        resize_keyboard: true,
-        one_time_keyboard: true,
+      inline_keypad: {
         rows: [
           {
             buttons: [
@@ -53,6 +50,7 @@ export async function POST(req: NextRequest) {
             ],
           },
         ],
+        
       },
     });
     return NextResponse.json({ ok: true });
