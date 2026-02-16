@@ -24,15 +24,12 @@ export async function POST(req: NextRequest) {
     console.log("update : ",update)
     const message = update.message;
 
-    console.log("message : ",message)
 
     if (!message) return NextResponse.json({ ok: true });
 
     const chatId = message.chat.id;
     const text = message.text || "";
 
-    console.log("chatId : ",chatId)
-    console.log("text : ",text)
 
     // 1️⃣ Handle contact sharing
     // if (message.contact) {
