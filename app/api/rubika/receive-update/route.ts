@@ -65,7 +65,7 @@ function buildGameKeypad(games: GameItem[]) {
     }
     rows.push({ buttons });
   }
-  return rows;
+  return rows; 
 }
 
 async function sendMenu(chatId: string) {
