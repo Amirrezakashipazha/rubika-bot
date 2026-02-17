@@ -29,13 +29,31 @@ export async function POST(req: NextRequest) {
 
     if (buttonId && buttonId === "games_selection" && messageId && text) {
         await apiRequest("sendMessage", {
-            // message_id: messageId,
+            // // message_id: messageId,
+            // chat_id: chatId,
+            // text: `شما ${text} را انتخاب کردید ✅`,
+            // chat_keypad_type: "Remove",
+            // type: "link",
+            // // link: GAME_APP_URL,
+            // url: GAME_APP_URL,
             chat_id: chatId,
             text: `شما ${text} را انتخاب کردید ✅`,
-            chat_keypad_type: "Remove",
-            type: "link",
-            // link: GAME_APP_URL,
-            url: GAME_APP_URL,
+            inline_keypad: {
+                rows: [
+                    {
+                        buttons: [
+                            {
+                                id: "selected_game",
+                                type: "link",
+                                button_text: text,
+                                url: GAME_APP_URL,
+                                // link: GAME_APP_URL,
+                            },
+                        ],
+                    },
+                ],
+
+            },
         });
         return NextResponse.json({ ok: true });
     }
