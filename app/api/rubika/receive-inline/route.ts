@@ -44,6 +44,33 @@ export async function POST(req: NextRequest) {
                                 button_text: text,
                                 link_type: "url",
                                 link: "https://www.google.com/",
+                            }, {
+                                id: "selected_game",
+                                type: "Link",
+                                button_text: text,
+                                link: "https://www.google.com/",
+                            },
+                            {
+                                id: "selected_game",
+                                type: "Link",
+                                button_text: text,
+                                url: "https://www.google.com/",
+                            },
+                            {
+                                id: "selected_game",
+                                type: "Link",
+                                button_text: text,
+                                url: "https://www.google.com/",
+                                link: "https://www.google.com/",
+                            },
+                            {
+                                id: "https://www.google.com/",
+                                type: "Link",
+                                button_text: text,
+                            }, {
+                                id: "selected_game",
+                                type: "Link",
+                                button_text: "https://www.google.com/",
                             },
                         ],
                     },
