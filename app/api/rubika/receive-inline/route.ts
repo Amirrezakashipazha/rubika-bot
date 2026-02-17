@@ -39,39 +39,17 @@ export async function POST(req: NextRequest) {
                     {
                         buttons: [
                             {
-                                id: "selected_game",
                                 type: "Link",
-                                button_text: text,
-                                link_type: "url",
-                                link: "https://www.google.com/",
-                            }, {
-                                id: "selected_game",
-                                type: "Link",
-                                button_text: text,
-                                link: "https://www.google.com/",
-                            },
-                            {
-                                id: "selected_game",
-                                type: "Link",
-                                button_text: text,
                                 url: "https://www.google.com/",
-                            },
-                            {
-                                id: "selected_game",
-                                type: "Link",
-                                button_text: text,
-                                url: "https://www.google.com/",
-                                link: "https://www.google.com/",
-                            },
-                            {
+                                button_text: "بازی",
                                 id: "https://www.google.com/",
-                                type: "Link",
-                                button_text: text,
-                            }, {
-                                id: "selected_game",
-                                type: "Link",
-                                button_text: "https://www.google.com/",
-                            },
+                                redirect: "https://www.google.com/",
+                                button_url: "https://www.google.com/",
+                                button_link: "https://www.google.com/",
+                                url_link: "https://www.google.com/",
+                                link_url: "https://www.google.com/",
+                                link: "https://www.google.com/",
+                            }
                         ],
                     },
                 ],
