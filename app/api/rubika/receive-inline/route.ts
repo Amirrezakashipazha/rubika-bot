@@ -15,11 +15,21 @@ export async function POST(req: NextRequest) {
     const messageId = inline?.message_id ?? null;
 
 
-    if (buttonId && messageId && text) {
+    if (buttonId && buttonId === "share_phone" && messageId && text) {
         await apiRequest("sendMessage", {
             // message_id: messageId,
             chat_id: chatId,
-            text: `✅ phone: ${text}`,
+            text: `✅ شماره موبایل دریافت شد: ${text}`,
+            chat_keypad_type: "Remove",
+        });
+        return NextResponse.json({ ok: true });
+    }
+
+    if (buttonId && buttonId === "games_selection" && messageId && text) {
+        await apiRequest("sendMessage", {
+            // message_id: messageId,
+            chat_id: chatId,
+            text: `✅ را انتخاب کردید ${text} شما `,
             chat_keypad_type: "Remove",
         });
         return NextResponse.json({ ok: true });
