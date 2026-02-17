@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
                             {
                                 id: "router",
                                 type: "Link",
-                                button_text: `http://localhost:3000/t/game/${id}?shTitle=${text}`,
+                                button_text: `https://stage.gamebox.ir/t/game/${id}?shTitle=${text}`,
                                 // button_string_picker: ""
                             }
                         ],
