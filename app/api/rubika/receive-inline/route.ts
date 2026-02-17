@@ -1,4 +1,4 @@
-import { apiRequest } from "@/lib/rubika";
+import { apiRequest, GAME_APP_URL } from "@/lib/rubika";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
 
 
     console.log(inline)
-    
+
     if (buttonId && buttonId === "share_phone" && messageId && text) {
         await apiRequest("sendMessage", {
             // message_id: messageId,
@@ -31,8 +31,11 @@ export async function POST(req: NextRequest) {
         await apiRequest("sendMessage", {
             // message_id: messageId,
             chat_id: chatId,
-            text: `✅ را انتخاب کردید ${text} شما `,
+            text: `شما ${text} را انتخاب کردید ✅`,
             chat_keypad_type: "Remove",
+            type: "link",
+            // link: GAME_APP_URL,
+            url: GAME_APP_URL,
         });
         return NextResponse.json({ ok: true });
     }

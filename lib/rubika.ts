@@ -107,3 +107,4 @@ export async function apiRequest(method: string, body: unknown) {
 export const TOKEN = process.env.RUBIKA_BOT_TOKEN!;
 export const BASE_URL = `https://botapi.rubika.ir/v3/${TOKEN}`;
 
+export const GAME_APP_URL = "https://stage.gamebox.ir/game";
