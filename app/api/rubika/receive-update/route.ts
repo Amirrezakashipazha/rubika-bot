@@ -67,6 +67,7 @@ export async function POST(req: NextRequest) {
                   selection_id: "games_v1",
                   title: "Games",
                   search_type: "None",
+                  get_type:"Local",
                   is_multi_selection: false,
                   columns_count: "1",
                   items: gameList.map((g: any) => ({
