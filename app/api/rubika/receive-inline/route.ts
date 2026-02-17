@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ ok: true });
     }
 
-    console.log(buttonId, messageId, text)
+    console.log(GAME_APP_URL)
 
     if (buttonId && buttonId === "games_selection" && messageId && text) {
         await apiRequest("sendMessage", {
@@ -36,20 +36,17 @@ export async function POST(req: NextRequest) {
             chat_keypad_type: "Remove",
             inline_keypad: {
                 rows: [
-                    {
-                        buttons: [
-                            {
-                                id: "selected_game",
-                                type: "Link",
-                                button_text: text,
-                                url: GAME_APP_URL,
-                                // link: GAME_APP_URL,
-                            },
-                        ],
-                    },
+                    [
+                        {
+                            id: "selected_game",
+                            type: "Link",
+                            button_text: text,
+                            url: GAME_APP_URL, 
+                        },
+                    ],
                 ],
-
             },
+
         });
         return NextResponse.json({ ok: true });
     }
