@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
     const payload = (await req.json()) as any;
 
-    console.log("RECEIVE_INLINE_RAW:", JSON.stringify(payload));
+    // console.log("RECEIVE_INLINE_RAW:", JSON.stringify(payload));
 
     const inline = payload.inline_message
 
@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     const messageId = inline?.message_id ?? null;
 
 
-    console.log(inline)
+    // console.log(inline)
 
     if (buttonId && buttonId === "share_phone" && messageId && text) {
         await apiRequest("sendMessage", {
@@ -26,6 +26,8 @@ export async function POST(req: NextRequest) {
         });
         return NextResponse.json({ ok: true });
     }
+
+    console.log(buttonId, messageId, text)
 
     if (buttonId && buttonId === "games_selection" && messageId && text) {
         await apiRequest("sendMessage", {

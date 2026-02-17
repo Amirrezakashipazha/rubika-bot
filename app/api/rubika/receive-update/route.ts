@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
   
   if (text === "/games") {
     const gameList = await fetchMenu()
-    console.log(gameList)
+    // console.log(gameList)
     await apiRequest("sendMessage", {
       chat_id: chatId,
       text: "لیست بازی‌ها 🚀",
