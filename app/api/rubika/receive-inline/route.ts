@@ -40,10 +40,10 @@ export async function POST(req: NextRequest) {
                         buttons: [
                             {
                                 id: "selected_game",
-                                type: "link",
+                                type: "Link",
                                 button_text: text,
-                                url: GAME_APP_URL,
-                                // link: GAME_APP_URL,
+                                // url: GAME_APP_URL,
+                                link: GAME_APP_URL,
                             },
                         ],
                     },
