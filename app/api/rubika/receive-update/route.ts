@@ -13,6 +13,7 @@ export async function POST(req: NextRequest) {
   const chatId = update.chat_id as string;
   const msg = update.new_message ?? {};
   const text = typeof msg.text === "string" ? msg.text.trim() : "";
+  console.log(text)
 
   // const phone = msg?.contact_message?.phone_number ?? null;
 
@@ -47,10 +48,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true });
   }
 
-
+  console.log(text)
   if (text === "/games") {
     const gameList = await fetchMenu()
-
+    console.log(gameList)
     await apiRequest("sendMessage", {
       chat_id: chatId,
       text: "لیست بازی‌ها 🚀",
