@@ -15,6 +15,8 @@ export async function POST(req: NextRequest) {
     const messageId = inline?.message_id ?? null;
 
 
+    console.log(inline)
+    
     if (buttonId && buttonId === "share_phone" && messageId && text) {
         await apiRequest("sendMessage", {
             // message_id: messageId,
