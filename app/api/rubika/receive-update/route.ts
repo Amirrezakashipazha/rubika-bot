@@ -34,10 +34,9 @@ export async function POST(req: NextRequest) {
     });
     return NextResponse.json({ ok: true });
   }
-  
+
   if (text === "/games") {
     const gameList = await fetchMenu()
-    // console.log(gameList)
     await apiRequest("sendMessage", {
       chat_id: chatId,
       text: "لیست بازی‌ها 🚀",
@@ -57,7 +56,7 @@ export async function POST(req: NextRequest) {
                   is_multi_selection: false,
                   columns_count: "1",
                   items: gameList.map((g: any) => ({
-                    text: g.title,
+                    text: `${g.id}::::${g.title}`,
                     image_url: g.icon,
                     type: "TextImgThu",
                   })),

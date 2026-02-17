@@ -1,21 +1,21 @@
 import { apiRequest, GAME_APP_URL } from "@/lib/rubika";
 import { NextRequest, NextResponse } from "next/server";
+import router from "next/navigation"
 
 export async function POST(req: NextRequest) {
     const payload = (await req.json()) as any;
 
-    // console.log("RECEIVE_INLINE_RAW:", JSON.stringify(payload));
 
     const inline = payload.inline_message
 
-    const text = inline.text
+    const text = inline.text.split("::::")?.[1]
+    const id = inline.text.split("::::")?.[0]
+
     const chatId = inline.chat_id
 
     const buttonId = inline?.aux_data?.button_id ?? null;
     const messageId = inline?.message_id ?? null;
 
-
-    // console.log(inline)
 
     if (buttonId && buttonId === "share_phone" && messageId && text) {
         await apiRequest("sendMessage", {
@@ -27,9 +27,9 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ ok: true });
     }
 
-    console.log(buttonId, messageId, text)
 
     if (buttonId && buttonId === "games_selection" && messageId && text) {
+
         await apiRequest("sendMessage", {
             chat_id: chatId,
             text: `شما ${text} را انتخاب کردید ✅`,
@@ -39,16 +39,10 @@ export async function POST(req: NextRequest) {
                     {
                         buttons: [
                             {
+                                id: "router",
                                 type: "Link",
-                                url: "https://www.google.com/",
-                                button_text: "بازی",
-                                id: "https://www.google.com/",
-                                redirect: "https://www.google.com/",
-                                button_url: "https://www.google.com/",
-                                button_link: "https://www.google.com/",
-                                url_link: "https://www.google.com/",
-                                link_url: "https://www.google.com/",
-                                link: "https://www.google.com/",
+                                button_text: `http://localhost:3000/t/game/${id}?shTitle=${text}`,
+                                // button_string_picker: ""
                             }
                         ],
                     },
