@@ -8,8 +8,8 @@ export async function POST(req: NextRequest) {
 
     const inline = payload.inline_message
 
-    const text = inline.text.split("::::")?.[1]
-    const id = inline.text.split("::::")?.[0]
+    const text = inline.text.split("*")?.[1]
+    const id = inline.text.split("*")?.[0]
 
     const chatId = inline.chat_id
 
@@ -32,23 +32,8 @@ export async function POST(req: NextRequest) {
 
         await apiRequest("sendMessage", {
             chat_id: chatId,
-            text: `شما ${text} را انتخاب کردید ✅`,
+            text: ` \n https://stage.gamebox.ir/t/game/${id}?shTitle=${text} شما ${text} را انتخاب کردید ✅`,
             chat_keypad_type: "Remove",
-            inline_keypad: {
-                rows: [
-                    {
-                        buttons: [
-                            {
-                                id: "router",
-                                type: "Link",
-                                button_text: `https://stage.gamebox.ir/t/game/${id}?shTitle=${text}`,
-                                // button_string_picker: ""
-                            }
-                        ],
-                    },
-                ],
-
-            },
         });
         return NextResponse.json({ ok: true });
     }

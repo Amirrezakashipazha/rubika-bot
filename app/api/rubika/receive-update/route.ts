@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
                   is_multi_selection: false,
                   columns_count: "1",
                   items: gameList.map((g: any) => ({
-                    text: `${g.id}::::${g.title}`,
+                    text: `${g.id}*${g.title}`,
                     image_url: g.icon,
                     type: "TextImgThu",
                   })),
