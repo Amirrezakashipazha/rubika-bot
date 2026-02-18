@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
 
 
     const inline = payload.inline_message
-
+    const phone = inline.text
     const text = inline.text.split("*")?.[1]
     const id = inline.text.split("*")?.[0]
 
@@ -17,11 +17,11 @@ export async function POST(req: NextRequest) {
     const messageId = inline?.message_id ?? null;
 
 
-    if (buttonId && buttonId === "share_phone" && messageId && text) {
+    if (buttonId && buttonId === "share_phone" && messageId && phone) {
         await apiRequest("sendMessage", {
             // message_id: messageId,
             chat_id: chatId,
-            text: `✅ شماره موبایل دریافت شد: ${text}`,
+            text: `✅ شماره موبایل دریافت شد: ${phone}`,
             chat_keypad_type: "Remove",
         });
         return NextResponse.json({ ok: true });
